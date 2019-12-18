@@ -2,7 +2,7 @@
 
 # dc-extension-localization
 
-![Travis](https://img.shields.io/travis/dev-warner/dc-extensions-localisation)
+![Travis](https://img.shields.io/travis/amplience/dc-extension-localization)
 
 > Automatic translation based on localized fields.
 
