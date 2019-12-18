@@ -1,5 +1,5 @@
 {
-  "name": "dc-extension-localise",
+  "name": "dc-extension-localization",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
