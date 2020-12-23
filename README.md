@@ -1,31 +1,55 @@
-[![Amplience Dynamic Content](header.png)](https://amplience.com/dynamic-content)
+[![Amplience Dynamic Content](media/header.png)](https://amplience.com/dynamic-content)
 
 # dc-extension-localization
 
-![Travis](https://img.shields.io/travis/amplience/dc-extension-localization)
+![Translate](media/translate.gif)
 
 > Automatic translation based on localized fields.
 
-## dev
 
-```bash
-$ npm run start
+## How to install
+
+### Register Extension
+
+This extension needs to be [registered](https://amplience.com/docs/development/registeringextensions.html) against a Hub with in the Dynamic Content application (Developer -> Extensions), for it to load within that Hub.
+
+#### Setup
+
+![Setup](media/setup.png)
+
+* Category: Content Field
+* Label: Localization _(this will appear as the tab title in the Dashboard)_
+* Name: localization _(needs to be unique with the Hub)_
+* URL: [https://dc-extension-localization.amplience.net](https://dc-extension-localization.amplience.net)
+
+To use the application the following permissions must be enabled:
+
+Note:
+You can use our deployed version of this extension (builds from the "production" branch) -
+
+[https://dc-extension-localization.amplience.net](https://dc-extension-localization.amplience.net)
+
+_As this is an open source project you're welcome to host your own "fork" of this project. You can use any standard static hosting service (Netlify, Amplify, Vercel, etc.) if you wish._
+
+##### Permissions
+
+![Permissions](media/permissions.png)
+
+Sandbox permissions:
+- Allow same origin
+
+#### Install parameters
+
+Generate a [Yandex API Key](https://translate.yandex.com/developers/keys) and pass it to the extension:
+
+
+```json
+{
+    "TRANSLATION_API_KEY": "<YOUR KEY>"
+}
 ```
 
-## build
-
-```bash
-$ npm run build
-```
-
-![Translate](translate.gif)
-
-## Register the extension
-
--   Name your extension
--   Add your extension url
--   Generate API Key from [here](https://translate.yandex.com/developers/keys)
--   Add under installation params called TRANSLATION_API_KEY
+## Example schema snippets
 
 ### Here is a snippet so you can add your extension easily
 
@@ -41,14 +65,6 @@ $ npm run build
     "ui:extension": {
         "name": "<your name of extension here>"
     }
-}
-```
-
-### Example Installation Params
-
-```json
-{
-    "TRANSLATION_API_KEY": "trnsl.1.1.20181113T13154q3434df54b6aa.051c8d933f00f1315ba7esaf3497d2922dace4eb64a1"
 }
 ```
 
@@ -87,4 +103,15 @@ Here is a basic schema just including the translate custom extension.
     },
     "propertyOrder": []
 }
+```
+## Running locally
+
+```bash
+$ npm run start
+```
+
+## How to build
+
+```bash
+$ npm run build
 ```
