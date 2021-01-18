@@ -5,6 +5,7 @@ frontend:
       commands:
         - nvm install 14
         - nvm use 14
+        - npm config set unsafe-perm true
         - npm ci
         - npm test
     build:
