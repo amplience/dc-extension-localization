@@ -20,14 +20,14 @@ This extension needs to be [registered](https://amplience.com/docs/development/r
 * Category: Content Field
 * Label: Localization _(this will appear as the tab title in the Dashboard)_
 * Name: localization _(needs to be unique with the Hub)_
-* URL: [https://dc-extension-localization.amplience.net](https://dc-extension-localization.amplience.net)
+* URL: [https://localization.extensions.content.amplience.net](https://localization.extensions.content.amplience.net)
 
 To use the application the following permissions must be enabled:
 
 Note:
 You can use our deployed version of this extension (builds from the "production" branch) -
 
-[https://dc-extension-localization.amplience.net](https://dc-extension-localization.amplience.net)
+[https://localization.extensions.content.amplience.net](https://localization.extensions.content.amplience.net)
 
 _As this is an open source project you're welcome to host your own "fork" of this project. You can use any standard static hosting service (Netlify, Amplify, Vercel, etc.) if you wish._
 
