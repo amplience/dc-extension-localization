@@ -6,7 +6,6 @@
 
 > Automatic translation based on localized fields.
 
-
 ## How to install
 
 ### Register Extension
@@ -104,13 +103,18 @@ Here is a basic schema just including the translate custom extension.
     "propertyOrder": []
 }
 ```
-## Running locally
+
+## Development
+
+This project requires Node 16.x to build. Tested with Node 16.16.0, NPM 8.11.0.
+
+### Running locally
 
 ```bash
 $ npm run start
 ```
 
-## How to build
+### How to build
 
 ```bash
 $ npm run build
