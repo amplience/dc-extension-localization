@@ -37,7 +37,7 @@ Sandbox permissions:
 
 #### Install parameters
 
-Generate a [Yandex API Key](https://translate.yandex.com/developers/keys) and pass it to the extension:
+Generate a [Yandex API Key](https://yandex.cloud/en/services/translate) and pass it to the extension:
 
 
 ```json
