@@ -1,4 +1,4 @@
-import yandex from 'yandex-translate';
+import OpenAI from 'openai';
 
 export function translateFactory(key, getTranslated) {
     const translate = translatorFactory(key);
@@ -17,17 +17,43 @@ export function translateFactory(key, getTranslated) {
 }
 
 function translatorFactory(key) {
-    const translator = yandex(key);
+    const openai = new OpenAI({
+        apiKey: key,
+        dangerouslyAllowBrowser: true // Required for browser-based extensions
+    });
 
-    return (text, { locale, language }) =>
-        new Promise((resolve, reject) => {
-            translator.translate(text, { to: language }, (err, data) => {
-                if (data.code === 502) reject('Invalid API Key');
-                if (data.code !== 200 || err) resolve({ text: '', locale, language });
-
-                resolve({ text: data.text[0], locale, language });
+    return async (text, { locale, language }) => {
+        try {
+            const response = await openai.chat.completions.create({
+                model: 'gpt-4o', // Default model for translation
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are a professional translator. Translate the given en-US text to ${locale}. Return ONLY the translated text with no explanations or additional content.`
+                    },
+                    {
+                        role: 'user',
+                        content: text
+                    }
+                ],
+                temperature: 0.3, // Lower temperature for more consistent translations
+                max_tokens: 1000
             });
-        });
+
+            const translatedText = response.choices[0].message.content.trim();
+
+            return { text: translatedText, locale, language };
+        } catch (error) {
+            console.error(`Translation error for ${language}:`, error);
+            
+            if (error.status === 401) {
+                throw new Error('Invalid API Key');
+            }
+            
+            // Return empty on error
+            return { text: '', locale, language };
+        }
+    };
 }
 
 function requestToMap(translated, locked, getTranslated) {

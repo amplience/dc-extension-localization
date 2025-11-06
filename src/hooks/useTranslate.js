@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useCallback, useMemo } from 'react';
 import { translateFactory } from '../utils/translate';
 import { defaultValues } from '../utils/defaultValues';
 import { ExtensionContext } from '../components/ExtensionProvider';
@@ -13,12 +13,20 @@ export function useTranslation(text, locked, lockAll, initalValue) {
     const [translated, setTranslated] = useState(
         defaultValues(availableLocales, initalValue)
     );
-    const translate = translateFactory(
-        installation.TRANSLATION_API_KEY,
-        getTranslated
+
+    const getTranslated = useCallback((locale) => {
+        return translated[locale] || '';
+    }, [translated]);
+
+    const translate = useMemo(() => 
+        translateFactory(
+            installation.TRANSLATION_API_KEY,
+            getTranslated
+        ),
+        [installation.TRANSLATION_API_KEY, getTranslated]
     );
 
-    async function translateText() {
+    const translateText = useCallback(async () => {
         try {
             const translations = await translate(
                 availableLocales,
@@ -30,19 +38,15 @@ export function useTranslation(text, locked, lockAll, initalValue) {
             lockAll();
         }
         catch (e) {
-            console.error('couldnt translate');
+            console.error('couldnt translate', e);
         }
-    }
+    }, [translate, availableLocales, text, locked, lockAll]);
 
-    function getTranslated(locale) {
-        return translated[locale] || '';
-    }
-
-    function updateTranslated(locale, value) {
+    const updateTranslated = useCallback((locale, value) => {
         const updated = Object.assign({}, translated, { [locale]: value });
 
         setTranslated(updated);
-    }
+    }, [translated]);
 
     return {
         translated,
