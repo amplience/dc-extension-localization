@@ -23,13 +23,14 @@ function translatorFactory(key) {
     });
 
     return async (text, { locale, language }) => {
+
         try {
             const response = await openai.chat.completions.create({
                 model: 'gpt-4o', // Default model for translation
                 messages: [
                     {
                         role: 'system',
-                        content: `You are a professional translator. Translate the given en-US text to ${locale}. Return ONLY the translated text with no explanations or additional content.`
+                        content: `You are a professional translator. Detect the input locale from the given content text and use this as the default locale. Translate the content text from the default locale to ${locale}. Return ONLY the translated text with no explanations or additional content. If the detected locale is the same as the required translation locale, use the content text as it was received.`
                     },
                     {
                         role: 'user',
@@ -45,11 +46,11 @@ function translatorFactory(key) {
             return { text: translatedText, locale, language };
         } catch (error) {
             console.error(`Translation error for ${language}:`, error);
-            
+
             if (error.status === 401) {
                 throw new Error('Invalid API Key');
             }
-            
+
             // Return empty on error
             return { text: '', locale, language };
         }
