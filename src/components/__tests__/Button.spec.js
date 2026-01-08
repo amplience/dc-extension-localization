@@ -1,26 +1,30 @@
-import React from 'react';
-import { mount } from '../../utils/enzyme';
-import { Button } from '../Button';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { Button } from "../Button";
 
-describe('Button', () => {
-  it('renders', () => {
-    const wrapper = mount(<Button label={'Hello'}/>)
+describe("Button", () => {
+  it("renders with the correct label and is enabled by default", () => {
+    render(<Button label="Hello" />);
 
-    expect(wrapper.find('.MuiButton-label').text()).toBe('Hello');
-    expect(wrapper.find('button').prop('disabled')).toEqual(false)
+    const button = screen.getByRole("button");
+    expect(button).toHaveTextContent("Hello");
+    expect(button).not.toBeDisabled();
   });
 
-  it('onClick calls onClick prop', () => {
+  it("calls onClick when clicked", () => {
     const onClick = jest.fn();
-    const wrapper = mount(<Button label={'Hello'} onClick={onClick}/>)
+    render(<Button label="Hello" onClick={onClick} />);
 
-    wrapper.simulate('click')
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('should be disabled if readOnly', () => {
-    const wrapper = mount(<Button label={'Hello'} readOnly={true} />)
+  it("is disabled if readOnly prop is true", () => {
+    render(<Button label="Hello" readOnly={true} />);
 
-    expect(wrapper.find('button').prop('disabled')).toEqual(true)
+    const button = screen.getByRole("button");
+    expect(button).toBeDisabled();
   });
-})
+});
