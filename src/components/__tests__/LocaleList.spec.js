@@ -1,109 +1,112 @@
-import React from 'react';
-import { mount } from '../../utils/enzyme';
-import { WithTheme } from '../../utils/withTheme';
-import { LocaleList } from '../LocaleList';
-import { Input } from '../Input';
-import { Lock } from '../Lock';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { LocaleList } from "../LocaleList";
+import { WithTheme } from "../../utils/withTheme";
 
-const MockLocaleList = ({ ...props }) => (
+const MockLocaleList = (props) => (
   <WithTheme>
-    <LocaleList {...props}/>
+    <LocaleList {...props} />
   </WithTheme>
-)
+);
 
-describe('LocaleList', () => {
-  it('renders', () => {
-    const locales = [{locale: 'en'}, { locale: 'fr'}];
-    const wrapper = mount((
+describe("LocaleList", () => {
+  const locales = [{ locale: "en" }, { locale: "fr" }];
+
+  it("renders inputs for all locales", () => {
+    render(
       <MockLocaleList
         locales={locales}
         readOnly={false}
-        isLocked={() => {}}
+        isLocked={() => false}
         getTranslated={() => {}}
         setLockedLocale={() => {}}
-        updateTranslated={() => {}}/>
-    ));
+        updateTranslated={() => {}}
+      />
+    );
 
-    expect(wrapper.find('.MuiFormControl-root').length).toBe(2);
+    const inputs = screen.getAllByRole("textbox");
+    expect(inputs).toHaveLength(2);
   });
 
-  it('when type update call update', () => {
-    const locales = [{locale: 'en'}, { locale: 'fr'}];
+  it("calls updateTranslated on input change", () => {
     const isLocked = jest.fn(() => false);
     const getTranslated = jest.fn();
     const setLockedLocale = jest.fn();
     const updateTranslated = jest.fn();
 
-    const wrapper = mount((
+    render(
       <MockLocaleList
         locales={locales}
         readOnly={false}
         isLocked={isLocked}
         getTranslated={getTranslated}
         setLockedLocale={setLockedLocale}
-        updateTranslated={updateTranslated}/>
-    ));
+        updateTranslated={updateTranslated}
+      />
+    );
 
-    wrapper.find(Input).first().props().onChange({ target: { value: 'hello' }});
+    const inputs = screen.getAllByRole("textbox");
 
-    expect(wrapper.find('.MuiFormControl-root').length).toBe(2);
-    expect(updateTranslated).toHaveBeenCalledWith('en', 'hello', false)
+    fireEvent.change(inputs[0], { target: { value: "hello" } });
+
+    expect(inputs).toHaveLength(2);
+    expect(updateTranslated).toHaveBeenCalledWith("en", "hello", false);
   });
 
-  it('should call lock when clicking ', () => {
-    const locales = [{locale: 'en'}, { locale: 'fr'}];
+  it("calls setLockedLocale when clicking lock icons", () => {
     const isLocked = jest.fn(() => false);
     const getTranslated = jest.fn();
     const setLockedLocale = jest.fn();
-    const setLockedLocaleFactory = jest.fn().mockImplementation(locale => {
-      return setLockedLocale
-    });
+    const setLockedLocaleFactory = jest.fn((locale) => setLockedLocale);
     const updateTranslated = jest.fn();
 
-    const wrapper = mount((
+    const { container } = render(
       <MockLocaleList
         locales={locales}
         readOnly={false}
         isLocked={isLocked}
         getTranslated={getTranslated}
         setLockedLocale={setLockedLocaleFactory}
-        updateTranslated={updateTranslated}/>
-    ));
+        updateTranslated={updateTranslated}
+      />
+    );
 
-    expect(setLockedLocaleFactory).toHaveBeenCalledWith('en');
-    expect(setLockedLocaleFactory).toHaveBeenCalledWith('fr');
+    expect(setLockedLocaleFactory).toHaveBeenCalledWith("en");
+    expect(setLockedLocaleFactory).toHaveBeenCalledWith("fr");
 
-    wrapper.find(Lock).find('path').first().simulate('click');
-    expect(wrapper.find('.MuiFormControl-root').length).toBe(2);
-    expect(setLockedLocale).toHaveBeenCalled();
+    const lockButtons = screen.getAllByLabelText("lock icon");
+
+    fireEvent.click(lockButtons[0]);
+    fireEvent.click(lockButtons[1]);
+
+    expect(lockButtons).toHaveLength(locales.length);
+    expect(setLockedLocale).toHaveBeenCalledTimes(2);
   });
 
-  it('should add value and label', () => {
-    const values = { en: 'value1', fr: 'value2'};
-    const locales = [{locale: 'en'}, { locale: 'fr'}];
+  it("renders values from getTranslated", () => {
+    const values = { en: "value1", fr: "value2" };
     const isLocked = jest.fn(() => false);
     const getTranslated = jest.fn((locale) => values[locale]);
     const setLockedLocale = jest.fn();
-    const setLockedLocaleFactory = jest.fn().mockImplementation(locale => {
-      return setLockedLocale
-    });
+    const setLockedLocaleFactory = jest.fn((locale) => setLockedLocale);
     const updateTranslated = jest.fn();
 
-    const wrapper = mount((
+    render(
       <MockLocaleList
         locales={locales}
         readOnly={false}
         isLocked={isLocked}
         getTranslated={getTranslated}
         setLockedLocale={setLockedLocaleFactory}
-        updateTranslated={updateTranslated}/>
-    ));
+        updateTranslated={updateTranslated}
+      />
+    );
 
-    const inputContainer = wrapper.find('.MuiFormControl-root');
+    const inputs = screen.getAllByRole("textbox");
+    expect(inputs).toHaveLength(2);
 
-    expect(inputContainer.length).toBe(2);
-
-    expect(inputContainer.find('textarea').first().text()).toEqual('value1');
-    expect(inputContainer.last().find('textarea').first().text()).toEqual('value2');
+    expect(inputs[0].value).toBe("value1");
+    expect(inputs[1].value).toBe("value2");
   });
 });
