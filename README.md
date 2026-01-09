@@ -14,10 +14,10 @@ This extension needs to be [registered](https://amplience.com/docs/development/r
 
 ![Setup](media/setup.png)
 
-* Category: Content Field
-* Label: Localization _(this will appear as the tab title in the Dashboard)_
-* Name: localization _(needs to be unique with the Hub)_
-* URL: [https://localization.extensions.content.amplience.net](https://localization.extensions.content.amplience.net)
+- Category: Content Field
+- Label: Localization _(this will appear as the tab title in the Dashboard)_
+- Name: localization _(needs to be unique with the Hub)_
+- URL: [https://localization.extensions.content.amplience.net](https://localization.extensions.content.amplience.net)
 
 To use the application the following permissions must be enabled:
 
@@ -33,16 +33,29 @@ _As this is an open source project you're welcome to host your own "fork" of thi
 ![Permissions](media/permissions.png)
 
 Sandbox permissions:
+
 - Allow same origin
 
-#### Install parameters
+#### Mandatory install parameters
 
-Generate a [Yandex API Key](https://translate.yandex.com/developers/keys) and pass it to the extension:
-
+Generate an [OpenAI API Key](https://openai.com/api/) and pass it to the extension.
 
 ```json
 {
-    "TRANSLATION_API_KEY": "<YOUR KEY>"
+  "TRANSLATION_API_KEY": "<YOUR KEY>"
+}
+```
+
+#### Optional install params
+
+You can also optionally override the default OpenAI "MODEL" and the "PROMPT" used by adding those params as in the example below.
+
+**\*Note: the text `${locale}` in the prompt must remain.**
+
+```json
+{
+  "MODEL": "gpt-4o",
+  "PROMPT": "You are a professional translator. Detect the input locale from the given content text and use this as the default locale. Translate the content text from the default locale to ${locale}. Return ONLY the translated text with no explanations or additional content. If the detected locale is the same as the required translation locale, use the content text as it was received."
 }
 ```
 
@@ -52,16 +65,16 @@ Generate a [Yandex API Key](https://translate.yandex.com/developers/keys) and pa
 
 ```json
 {
-    "title": "title",
-    "description": "description",
-    "allOf": [
-        {
-            "$ref": "http://bigcontent.io/cms/schema/v1/localization#/definitions/localized-string"
-        }
-    ],
-    "ui:extension": {
-        "name": "<your name of extension here>"
+  "title": "title",
+  "description": "description",
+  "allOf": [
+    {
+      "$ref": "http://bigcontent.io/cms/schema/v1/localization#/definitions/localized-string"
     }
+  ],
+  "ui:extension": {
+    "name": "<your name of extension here>"
+  }
 }
 ```
 
@@ -71,34 +84,34 @@ Here is a basic schema just including the translate custom extension.
 
 ```json
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "http://localise.com",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://localise.com",
 
-    "title": "Title",
-    "description": "Description",
+  "title": "Title",
+  "description": "Description",
 
-    "allOf": [
+  "allOf": [
+    {
+      "$ref": "http://bigcontent.io/cms/schema/v1/core#/definitions/content"
+    }
+  ],
+
+  "type": "object",
+  "properties": {
+    "localise": {
+      "title": "title",
+      "description": "description",
+      "allOf": [
         {
-            "$ref": "http://bigcontent.io/cms/schema/v1/core#/definitions/content"
+          "$ref": "http://bigcontent.io/cms/schema/v1/localization#/definitions/localized-string"
         }
-    ],
-
-    "type": "object",
-    "properties": {
-        "localise": {
-            "title": "title",
-            "description": "description",
-            "allOf": [
-                {
-                    "$ref": "http://bigcontent.io/cms/schema/v1/localization#/definitions/localized-string"
-                }
-            ],
-            "ui:extension": {
-                "name": "<your name of extension here>"
-            }
-        }
-    },
-    "propertyOrder": []
+      ],
+      "ui:extension": {
+        "name": "<your name of extension here>"
+      }
+    }
+  },
+  "propertyOrder": []
 }
 ```
 
