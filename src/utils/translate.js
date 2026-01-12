@@ -35,7 +35,8 @@ function translatorFactory(key, gptModel = "gpt-4o", prompt) {
           {
             role: "system",
             content: prompt
-              ? prompt.replace("${locale}", locale)
+              ? // eslint-disable-next-line no-template-curly-in-string
+                prompt.replace("${locale}", locale)
               : defaultPrompt,
           },
           {

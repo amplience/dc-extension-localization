@@ -29,7 +29,12 @@ export function useTranslation(text, locked, lockAll, initalValue) {
         installation.PROMPT,
         getTranslated
       ),
-    [installation.TRANSLATION_API_KEY, getTranslated]
+    [
+      installation.TRANSLATION_API_KEY,
+      installation.MODEL,
+      installation.PROMPT,
+      getTranslated,
+    ]
   );
 
   const translateText = useCallback(async () => {
