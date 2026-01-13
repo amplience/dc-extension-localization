@@ -38,6 +38,10 @@ export function useTranslation(text, locked, lockAll, initalValue) {
   );
 
   const translateText = useCallback(async () => {
+    if (!text) {
+      return;
+    }
+
     try {
       const translations = await translate(availableLocales, text, locked);
 
