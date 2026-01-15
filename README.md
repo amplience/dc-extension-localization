@@ -48,7 +48,7 @@ Generate an [OpenAI API Key](https://openai.com/api/) and pass it to the extensi
 
 #### Optional install params
 
-You can also optionally override the default OpenAI "MODEL" and the "PROMPT" used by adding those params as in the example below.
+You can also optionally override the default OpenAI "MODEL" (gpt-5.2) and the "PROMPT" used by adding those params as in the example below.
 
 **\*Note: the text `${locale}` in the prompt must remain.**
 

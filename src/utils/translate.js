@@ -19,7 +19,7 @@ export function translateFactory(key, model, prompt, getTranslated) {
   };
 }
 
-function translatorFactory(key, gptModel = "gpt-4o", prompt) {
+function translatorFactory(key, gptModel = "gpt-5.2", prompt) {
   const openai = new OpenAI({
     apiKey: key,
     dangerouslyAllowBrowser: true, // Required for browser-based extensions
@@ -45,7 +45,7 @@ function translatorFactory(key, gptModel = "gpt-4o", prompt) {
           },
         ],
         temperature: 0.3, // Lower temperature for more consistent translations
-        max_tokens: 1000,
+        max_completion_tokens: 2048,
       });
 
       const translatedText = response.choices[0].message.content.trim();
