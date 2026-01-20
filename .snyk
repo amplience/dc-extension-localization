@@ -1,0 +1,5 @@
+ignore:
+  'snyk:lic:npm:axe-core:MPL-2.0':
+    - '*':
+        reason: 'Affect package is developer tooling for testing the app and is not modified or distrubuted'
+        expires: '2027-01-20T00:00:00.000Z'

@@ -1,24 +1,29 @@
-import React from 'react';
-import { mount } from '../../utils/enzyme';
-import { Input } from '../Input';
-import { WithTheme } from '../../utils/withTheme';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { Input } from "../Input";
+import { WithTheme } from "../../utils/withTheme";
 
-const MockInput = ({ ...props }) => (
+const MockInput = (props) => (
   <WithTheme>
-    <Input {...props}/>
+    <Input {...props} />
   </WithTheme>
-)
+);
 
-describe('Input', () => {
-  it('renders', () => {
-    const wrapper = mount(<MockInput label={'Hello'} value={'value'}/>);
+describe("Input", () => {
+  it("renders with the correct value", () => {
+    render(<MockInput label="Hello" value="value" />);
 
-    expect(wrapper.find('input').prop('value')).toBe('value');
+    const input = screen.getByRole("textbox");
+    expect(input.value).toBe("value");
+    expect(input.tagName).toBe("INPUT");
   });
 
-  it('multiline', () => {
-    const wrapper = mount(<MockInput label={'Hello'} value={'value'} multiline={true}/>);
+  it("renders a multiline textarea when multiline is true", () => {
+    render(<MockInput label="Hello" value="value" multiline={true} />);
 
-    expect(wrapper.find('textarea').first().text()).toBe('value');
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.value).toBe("value");
+    expect(textarea.tagName).toBe("TEXTAREA");
   });
 });
