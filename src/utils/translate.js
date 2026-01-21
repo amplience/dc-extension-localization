@@ -1,43 +1,77 @@
-import yandex from 'yandex-translate';
+import OpenAI from "openai";
 
-export function translateFactory(key, getTranslated) {
-    const translate = translatorFactory(key);
+export function translateFactory(key, model, prompt, getTranslated) {
+  const translate = translatorFactory(key, model, prompt);
 
-    async function getAllTranslated(text, locales) {
-        return Promise.all(locales.map(locale => translate(text, locale)));
-    }
+  async function getAllTranslated(text, locales) {
+    return Promise.all(locales.map((locale) => translate(text, locale)));
+  }
 
-    return async (availableLocales, text, locked) => {
-        const langs = availableLocales.map(({ language, locale }) => ({ language, locale }));
+  return async (availableLocales, text, locked) => {
+    const langs = availableLocales.map(({ language, locale }) => ({
+      language,
+      locale,
+    }));
 
-        const translated = await getAllTranslated(text, langs);
+    const translated = await getAllTranslated(text, langs);
 
-        return requestToMap(translated, locked, getTranslated);
-    };
+    return requestToMap(translated, locked, getTranslated);
+  };
 }
 
-function translatorFactory(key) {
-    const translator = yandex(key);
+function translatorFactory(key, gptModel = "gpt-5.2", prompt) {
+  const openai = new OpenAI({
+    apiKey: key,
+    dangerouslyAllowBrowser: true, // Required for browser-based extensions
+  });
 
-    return (text, { locale, language }) =>
-        new Promise((resolve, reject) => {
-            translator.translate(text, { to: language }, (err, data) => {
-                if (data.code === 502) reject('Invalid API Key');
-                if (data.code !== 200 || err) resolve({ text: '', locale, language });
+  return async (text, { locale, language }) => {
+    const defaultPrompt = `You are a professional translator. Detect the input locale from the given content text and use this as the default locale. Translate the content text from the default locale to ${locale}. Return ONLY the translated text with no explanations or additional content. If the detected locale is the same as the required translation locale, use the content text as it was received.`;
 
-                resolve({ text: data.text[0], locale, language });
-            });
-        });
+    try {
+      const response = await openai.chat.completions.create({
+        model: gptModel, // Default model for translation
+        messages: [
+          {
+            role: "system",
+            content: prompt
+              ? // eslint-disable-next-line no-template-curly-in-string
+                prompt.replace("${locale}", locale)
+              : defaultPrompt,
+          },
+          {
+            role: "user",
+            content: text,
+          },
+        ],
+        temperature: 0.3, // Lower temperature for more consistent translations
+        max_completion_tokens: 2048,
+      });
+
+      const translatedText = response.choices[0].message.content.trim();
+
+      return { text: translatedText, locale, language };
+    } catch (error) {
+      console.error(`Translation error for ${language}:`, error);
+
+      if (error.status === 401) {
+        throw new Error("Invalid API Key");
+      }
+
+      // Return empty on error
+      return { text: "", locale, language };
+    }
+  };
 }
 
 function requestToMap(translated, locked, getTranslated) {
-    return translated.reduce((acc, fetched) => {
-        const complete = locked[fetched.locale]
-            ? getTranslated(fetched.locale)
-            : fetched.text;
+  return translated.reduce((acc, fetched) => {
+    const complete = locked[fetched.locale]
+      ? getTranslated(fetched.locale)
+      : fetched.text;
 
-        return Object.assign(acc, {
-            [fetched.locale]: complete
-        });
-    }, {});
+    return Object.assign(acc, {
+      [fetched.locale]: complete,
+    });
+  }, {});
 }
